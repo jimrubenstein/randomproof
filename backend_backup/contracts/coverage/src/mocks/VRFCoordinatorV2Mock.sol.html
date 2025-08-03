@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/mocks/VRFCoordinatorV2Mock.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">src/mocks/</a> VRFCoordinatorV2Mock.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">52.94% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>18/34</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">18.75% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>3/16</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">38.46% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>5/13</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">53.33% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>24/45</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+&nbsp;
+import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
+&nbsp;
+contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
+    uint256 private s_nextRequestId = 1;
+    uint256 private s_nextSubId = 1;
+    
+    struct Subscription {
+        address owner;
+        uint96 balance;
+        uint64 reqCount;
+        address[] consumers;
+    }
+    
+    mapping(uint64 =&gt; Subscription) private s_subscriptions;
+    mapping(uint256 =&gt; address) private s_consumers;
+    
+    event SubscriptionCreated(uint64 indexed subId, address owner);
+    event SubscriptionFunded(uint64 indexed subId, uint256 oldBalance, uint256 newBalance);
+    event SubscriptionConsumerAdded(uint64 indexed subId, address consumer);
+    event RandomWordsRequested(
+        bytes32 indexed keyHash,
+        uint256 requestId,
+        uint256 preSeed,
+        uint64 indexed subId,
+        uint16 minimumRequestConfirmations,
+        uint32 callbackGasLimit,
+        uint32 numWords,
+        address indexed sender
+    );
+    event RandomWordsFulfilled(uint256 indexed requestId, uint256 outputSeed, uint96 payment, bool success);
+    
+    function createSubscription() external override returns (uint64) {
+        uint64 subId = uint64(s_nextSubId++);
+        s_subscriptions[subId] = Subscription({
+            owner: msg.sender,
+            balance: 0,
+            reqCount: 0,
+            consumers: new address[](0)
+        });
+        emit SubscriptionCreated(subId, msg.sender);
+        return subId;
+    }
+    
+<span class="fstat-no" title="function not covered" >    function getSubscription(uint64 subId) </span>
+        external 
+        view 
+        override 
+        returns (
+            uint96 balance,
+            uint64 reqCount,
+            address owner,
+            address[] memory consumers
+        ) 
+    {
+<span class="cstat-no" title="statement not covered" >        Subscription memory sub = s_subscriptions[subId];</span>
+<span class="cstat-no" title="statement not covered" >        return (sub.balance, sub.reqCount, sub.owner, sub.consumers);</span>
+    }
+    
+<span class="fstat-no" title="function not covered" >    function requestSubscriptionOwnerTransfer(uint64 subId, address newOwner) external override {</span>
+<span class="cstat-no" title="statement not covered" >        require(s_subscriptions[subId].owner == msg.sender, "Not subscription owner")</span>;
+        // In mock, we just do instant transfer
+        s_subscriptions[subId].owner = newOwner;
+    }
+    
+<span class="fstat-no" title="function not covered" >    function acceptSubscriptionOwnerTransfer(uint64 subId) external override {</span>
+        // In mock, transfer is instant, so nothing to do
+    }
+    
+    function addConsumer(uint64 subId, address consumer) external override {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(s_subscriptions[subId].owner == msg.sender, "Not subscription owner");
+        s_subscriptions[subId].consumers.push(consumer);
+        emit SubscriptionConsumerAdded(subId, consumer);
+    }
+    
+<span class="fstat-no" title="function not covered" >    function removeConsumer(uint64 subId, address consumer) external override {</span>
+<span class="cstat-no" title="statement not covered" >        require(s_subscriptions[subId].owner == msg.sender, "Not subscription owner")</span>;
+<span class="cstat-no" title="statement not covered" >        address[] storage consumers = s_subscriptions[subId].consumers;</span>
+<span class="cstat-no" title="statement not covered" >        for (uint i = 0; i &lt; consumers.length; i++) {</span>
+<span class="cstat-no" title="statement not covered" >            if (consumers[i] == consumer) {</span>
+                consumers[i] = consumers[consumers.length - 1];
+<span class="cstat-no" title="statement not covered" >                consumers.pop()</span>;
+                break;
+            }
+        }
+    }
+    
+<span class="fstat-no" title="function not covered" >    function cancelSubscription(uint64 subId, address to) external override {</span>
+<span class="cstat-no" title="statement not covered" >        require(s_subscriptions[subId].owner == msg.sender, "Not subscription owner")</span>;
+<span class="cstat-no" title="statement not covered" >        uint96 balance = s_subscriptions[subId].balance;</span>
+        delete s_subscriptions[subId];
+        // In real implementation, would refund LINK
+    }
+    
+<span class="fstat-no" title="function not covered" >    function pendingRequestExists(uint64 subId) external view override returns (bool) {</span>
+<span class="cstat-no" title="statement not covered" >        return false;</span> // Mock has no pending requests
+    }
+    
+<span class="fstat-no" title="function not covered" >    function getRequestConfig() external view override returns (uint16, uint32, bytes32[] memory) {</span>
+<span class="cstat-no" title="statement not covered" >        bytes32[] memory keyHashes = new bytes32[](1);</span>
+        keyHashes[0] = 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c;
+<span class="cstat-no" title="statement not covered" >        return (3, 2500000, keyHashes);</span> // minimumRequestConfirmations, maxGasLimit, keyHashes
+    }
+    
+    function requestRandomWords(
+        bytes32 keyHash,
+        uint64 subId,
+        uint16 minimumRequestConfirmations,
+        uint32 callbackGasLimit,
+        uint32 numWords
+    ) external override returns (uint256) {
+        // Check consumer is authorized
+        bool authorized = false;
+        address[] memory consumers = s_subscriptions[subId].consumers;
+        for (uint i = 0; i &lt; consumers.length; i++) {
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (consumers[i] == msg.sender) {
+                authorized = true;
+                break;
+            }
+        }
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(authorized, "Not authorized consumer");
+        
+        uint256 requestId = s_nextRequestId++;
+        s_consumers[requestId] = msg.sender;
+        s_subscriptions[subId].reqCount++;
+        
+        emit RandomWordsRequested(
+            keyHash,
+            requestId,
+            block.timestamp,
+            subId,
+            minimumRequestConfirmations,
+            callbackGasLimit,
+            numWords,
+            msg.sender
+        );
+        
+        return requestId;
+    }
+    
+    // Mock-specific functions for testing
+    function fundSubscription(uint64 subId, uint96 amount) external {
+        uint256 oldBalance = s_subscriptions[subId].balance;
+        s_subscriptions[subId].balance += amount;
+        emit SubscriptionFunded(subId, oldBalance, s_subscriptions[subId].balance);
+    }
+    
+<span class="fstat-no" title="function not covered" >    function fulfillRandomWords(uint256 requestId, address consumer, uint256[] memory randomWords) external {</span>
+<span class="cstat-no" title="statement not covered" >        require(s_consumers[requestId] == consumer, "Wrong consumer")</span>;
+        
+<span class="cstat-no" title="statement not covered" >        VRFConsumerBaseV2(consumer).rawFulfillRandomWords(requestId, randomWords)</span>;
+        
+<span class="cstat-no" title="statement not covered" >        emit RandomWordsFulfilled(requestId, randomWords[0], 0, true);</span>
+    }
+    
+    function fulfillRandomWordsWithOverride(
+        uint256 requestId,
+        address consumer,
+        uint256[] memory randomWords
+    ) external {
+        // Skip consumer check for testing
+        VRFConsumerBaseV2(consumer).rawFulfillRandomWords(requestId, randomWords);
+        emit RandomWordsFulfilled(requestId, randomWords.length &gt; 0 ? randomWords[0] : 0, 0, true);
+    }
+}</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Aug 03 2025 04:58:09 GMT+0000 (Coordinated Universal Time)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

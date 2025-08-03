@@ -1,0 +1,44 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="16" cy="16" r="15" fill="url(#gradient)" stroke="url(#strokeGradient)" stroke-width="2"/>
+  
+  <!-- Dice Face -->
+  <rect x="8" y="8" width="16" height="16" rx="3" fill="white" opacity="0.9"/>
+  
+  <!-- Dice Dots (representing randomness) -->
+  <circle cx="12" cy="12" r="1.5" fill="url(#dotGradient)"/>
+  <circle cx="20" cy="12" r="1.5" fill="url(#dotGradient)"/>
+  <circle cx="16" cy="16" r="1.5" fill="url(#dotGradient)"/>
+  <circle cx="12" cy="20" r="1.5" fill="url(#dotGradient)"/>
+  <circle cx="20" cy="20" r="1.5" fill="url(#dotGradient)"/>
+  
+  <!-- Blockchain Link Accent -->
+  <path d="M6 26 L10 22 M22 10 L26 6" stroke="url(#linkGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  
+  <defs>
+    <!-- Main gradient -->
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Stroke gradient -->
+    <linearGradient id="strokeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7e22ce;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Dot gradient -->
+    <linearGradient id="dotGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Link gradient -->
+    <linearGradient id="linkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,186 @@
+import type { BlockchainContract } from '../types/blockchain';
+import { ethers } from 'ethers';
+import { keccak256 } from 'ethers';
+
+interface ChainlinkVRFConfig {
+  contractAddress: string;
+  rpcUrl?: string;
+  privateKey?: string;
+}
+
+const CONTRACT_ABI = [
+  "function requestRandomness(string entityHash, bytes32 salt) external returns (uint256)",
+  "function getRandomnessForEntityHash(string entityHash) external view returns (uint256, bool)",
+  "function isEntityHashProcessed(string entityHash) external view returns (bool)",
+  "function getRequestIdForEntityHash(string entityHash) external view returns (uint256)",
+  "event RandomnessRequested(uint256 indexed requestId, bytes32 indexed entityHashBytes32, string entityHash, bytes32 salt, address indexed requester)",
+  "event RandomnessFulfilled(uint256 indexed requestId, bytes32 indexed entityHashBytes32, uint256 randomness)"
+];
+
+export class ChainlinkVRFDriver implements BlockchainContract {
+  private provider: ethers.Provider;
+  private contract: ethers.Contract;
+  private signer?: ethers.Signer;
+  private entityHashToRequestId = new Map<string, bigint>();
+  
+  constructor(config: ChainlinkVRFConfig) {
+    if (config.rpcUrl && config.privateKey) {
+      this.provider = new ethers.JsonRpcProvider(config.rpcUrl);
+      this.signer = new ethers.Wallet(config.privateKey, this.provider);
+      this.contract = new ethers.Contract(config.contractAddress, CONTRACT_ABI, this.signer);
+    } else if (typeof window !== 'undefined' && (window as any).ethereum) {
+      this.provider = new ethers.BrowserProvider((window as any).ethereum);
+      this.contract = new ethers.Contract(config.contractAddress, CONTRACT_ABI, this.provider);
+    } else {
+      throw new Error('No provider available. Provide RPC URL or use in browser with MetaMask');
+    }
+  }
+  
+  async requestRandomness(entityHash: string, saltBytes32: string): Promise<string> {
+    try {
+      if (!this.signer && typeof window !== 'undefined') {
+        const browserProvider = this.provider as ethers.BrowserProvider;
+        this.signer = await browserProvider.getSigner();
+        this.contract = new ethers.Contract(this.contract.target as string, CONTRACT_ABI, this.signer);
+      }
+      
+      if (!this.signer) {
+        throw new Error('No signer available');
+      }
+      
+      const isProcessed = await this.contract.isEntityHashProcessed(entityHash);
+      if (isProcessed) {
+        throw new Error('Entity hash already processed');
+      }
+      
+      // Convert salt to bytes32 if it's not already
+      let saltHash: string;
+      if (saltBytes32.startsWith('0x') && saltBytes32.length === 66) {
+        // Already a bytes32 hash
+        saltHash = saltBytes32;
+      } else {
+        // Hash the salt to bytes32
+        saltHash = keccak256(ethers.toUtf8Bytes(saltBytes32));
+      }
+      
+      console.log('Requesting randomness from ChainLink VRF...', { entityHash, salt: saltHash });
+      const tx = await this.contract.requestRandomness(entityHash, saltHash);
+      console.log('Transaction submitted:', tx.hash);
+      
+      const receipt = await tx.wait();
+      if (!receipt) {
+        throw new Error('Transaction failed');
+      }
+      
+      console.log('Transaction confirmed:', {
+        hash: tx.hash,
+        blockNumber: receipt.blockNumber,
+        gasUsed: receipt.gasUsed.toString()
+      });
+      
+      const requestEvent = receipt.logs.find((log: any) => {
+        try {
+          const parsed = this.contract.interface.parseLog({
+            topics: log.topics,
+            data: log.data
+          });
+          return parsed?.name === 'RandomnessRequested';
+        } catch {
+          return false;
+        }
+      });
+      
+      if (requestEvent) {
+        const parsed = this.contract.interface.parseLog({
+          topics: requestEvent.topics,
+          data: requestEvent.data
+        });
+        const requestId = parsed?.args.requestId;
+        if (requestId) {
+          this.entityHashToRequestId.set(entityHash, requestId);
+        }
+      }
+      
+      return tx.hash;
+    } catch (error: any) {
+      console.error('ChainLink VRF request failed:', error);
+      
+      if (error.reason) {
+        throw new Error(`Contract error: ${error.reason}`);
+      }
+      
+      throw new Error(`VRF request failed: ${error.message}`);
+    }
+  }
+  
+  async fetchRandomness(entityHash: string): Promise<number> {
+    try {
+      console.log('Fetching randomness for entity hash:', entityHash);
+      
+      const [randomness, fulfilled] = await this.contract.getRandomnessForEntityHash(entityHash);
+      
+      if (!fulfilled) {
+        console.log('Randomness not yet fulfilled by ChainLink');
+        return 0;
+      }
+      
+      const randomNumber = Number(randomness % BigInt(2**32));
+      
+      console.log('Randomness fulfilled:', {
+        entityHash,
+        randomness: randomness.toString(),
+        normalizedValue: randomNumber
+      });
+      
+      return randomNumber;
+    } catch (error: any) {
+      if (error.reason === 'RequestNotFound') {
+        console.log('No request found for entity hash');
+        return 0;
+      }
+      
+      console.error('Failed to fetch randomness:', error);
+      return 0;
+    }
+  }
+  
+  async getRequestId(entityHash: string): Promise<bigint | null> {
+    try {
+      const cachedId = this.entityHashToRequestId.get(entityHash);
+      if (cachedId) return cachedId;
+      
+      const requestId = await this.contract.getRequestIdForEntityHash(entityHash);
+      this.entityHashToRequestId.set(entityHash, requestId);
+      return requestId;
+    } catch {
+      return null;
+    }
+  }
+  
+  async waitForFulfillment(entityHash: string, timeout = 300000): Promise<number> {
+    const startTime = Date.now();
+    
+    while (Date.now() - startTime < timeout) {
+      const randomness = await this.fetchRandomness(entityHash);
+      if (randomness > 0) {
+        return randomness;
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+    
+    throw new Error('Timeout waiting for VRF fulfillment');
+  }
+  
+  onRandomnessRequested(callback: (event: any) => void): void {
+    this.contract.on('RandomnessRequested', callback);
+  }
+  
+  onRandomnessFulfilled(callback: (event: any) => void): void {
+    this.contract.on('RandomnessFulfilled', callback);
+  }
+  
+  removeAllListeners(): void {
+    this.contract.removeAllListeners();
+  }
+}
