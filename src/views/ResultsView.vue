@@ -10,7 +10,7 @@ import { blockchainContract } from '../utils/blockchain'
 import { MathRandomDriver } from '../utils/mathRandomDriver'
 
 const props = defineProps<{
-  transactionID: string
+  entityHash: string
 }>()
 
 const route = useRoute()
@@ -28,13 +28,12 @@ const randomnessNotRequested = ref(false)
 const gistUrl = computed(() => route.query.gg as string | undefined)
 
 // Check for verification parameters in URL
-const urlEntityHash = computed(() => route.query.entityHash as string | undefined)
 const urlSalt = computed(() => route.query.salt as string | undefined)
 const urlPreSort = computed(() => route.query.preSort === '1')
 
 onMounted(async () => {
-  // Store transaction ID
-  store.transactionId = props.transactionID
+  // Store entity hash from route
+  store.entityHash = props.entityHash
   
   // Read winner count from URL if provided
   const winnersParam = route.query.winners as string
@@ -46,9 +45,6 @@ onMounted(async () => {
   }
   
   // Restore state from URL parameters for verification
-  if (urlEntityHash.value) {
-    store.entityHash = urlEntityHash.value
-  }
   
   if (urlSalt.value) {
     store.setSalt(urlSalt.value)
@@ -58,13 +54,16 @@ onMounted(async () => {
   
   // If we don't have randomness but have entity hash, request it
   // IMPORTANT: Only auto-generate for Math.random driver (testing), not production blockchain
-  if (!store.hasRandomness && urlEntityHash.value) {
+  if (!store.hasRandomness && props.entityHash) {
     if (blockchainContract instanceof MathRandomDriver) {
       try {
-        // For testing driver only: auto-fetch randomness using the entity hash from URL
-        const randomValue = await blockchainContract.fetchRandomness(urlEntityHash.value)
+        // For testing driver only: auto-fetch randomness using the entity hash
+        const randomValue = await blockchainContract.fetchRandomness(props.entityHash)
         if (randomValue > 0) {
-          store.setRandomnessData(randomValue, props.transactionID)
+          // Generate a mock transaction ID for display purposes
+          const mockTxId = `0x${Date.now().toString(16)}${props.entityHash.slice(0, 8)}`
+          store.setTransactionData(mockTxId, props.entityHash)
+          store.setRandomnessData(randomValue, mockTxId)
           store.setResponseBlockData(Date.now(), Date.now()) // Mock block data
         }
       } catch (error) {
@@ -134,9 +133,8 @@ async function verifyManually() {
   // Compute hash (data+salt hashed together)
   const computedHash = await sha256Hash(processedData + manualSalt.value)
   
-  // Compare against the entity hash from URL or store
-  const targetEntityHash = urlEntityHash.value || store.entityHash
-  const entityHashValid = computedHash === targetEntityHash
+  // Compare against the entity hash from props (route param)
+  const entityHashValid = computedHash === props.entityHash
   
   // Salt verification - check against URL or store
   const targetSalt = urlSalt.value || store.salt
@@ -185,7 +183,7 @@ async function copyShareableUrl() {
             The proof must be requested before results can be displayed.
           </p>
           <p class="text-sm text-red-600 mb-4">
-            <strong>Entity Hash:</strong> <code class="bg-red-100 px-2 py-1 rounded text-xs">{{ urlEntityHash?.slice(0, 16) }}...</code>
+            <strong>Entity Hash:</strong> <code class="bg-red-100 px-2 py-1 rounded text-xs">{{ props.entityHash.slice(0, 16) }}...</code>
           </p>
           <router-link 
             to="/" 
@@ -200,7 +198,7 @@ async function copyShareableUrl() {
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Left Column: Results -->
       <div>
-        <ResultsPage :transaction-id="transactionID" />
+        <ResultsPage :transaction-id="store.transactionId" />
         
         <!-- Manual Verification for Direct Input -->
         <div v-if="!gistUrl" class="mt-6 bg-white rounded-lg shadow p-6">
@@ -219,7 +217,7 @@ async function copyShareableUrl() {
               </p>
               <div class="flex items-center justify-between text-blue-600 text-xs mb-3">
                 <span>Winner count: <strong>{{ store.numberOfWinners }}</strong></span>
-                <code class="bg-blue-100 px-2 py-1 rounded text-xs">{{ transactionID }}</code>
+                <code class="bg-blue-100 px-2 py-1 rounded text-xs">{{ props.entityHash.slice(0, 16) }}...</code>
               </div>
               <button
                 @click="copyShareableUrl"
@@ -264,7 +262,7 @@ async function copyShareableUrl() {
                 We'll process it the same way and compare the entity hash to verify authenticity.
               </p>
               <p class="text-blue-700 text-xs mt-2">
-                <strong>Expected Hash:</strong> <code class="bg-blue-100 px-1 py-0.5 rounded">{{ (urlEntityHash || store.entityHash)?.slice(0, 16) }}...</code>
+                <strong>Expected Hash:</strong> <code class="bg-blue-100 px-1 py-0.5 rounded">{{ props.entityHash.slice(0, 16) }}...</code>
               </p>
             </div>
             

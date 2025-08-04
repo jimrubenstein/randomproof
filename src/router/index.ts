@@ -11,7 +11,7 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/results/:transactionID',
+      path: '/results/:entityHash',
       name: 'results',
       component: ResultsView,
       props: true

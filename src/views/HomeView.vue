@@ -45,15 +45,12 @@ async function handleSubmit() {
       query.salt = store.salt
     }
     
-    // Add entity hash for direct verification
-    query.entityHash = entityHash
-    
     // Add pre-sort flag
     query.preSort = store.preSortEnabled ? '1' : '0'
     
     router.push({
       name: 'results',
-      params: { transactionID: transactionId },
+      params: { entityHash: entityHash },
       query
     })
   } catch (error) {
