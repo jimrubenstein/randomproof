@@ -1,0 +1,4 @@
+# Netlify redirects for single-page application
+# This ensures Vue Router handles all routes
+
+/*    /index.html   200

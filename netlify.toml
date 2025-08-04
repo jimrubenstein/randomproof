@@ -1,0 +1,61 @@
+# Netlify configuration for RandomProof Vue.js application
+
+# Build settings
+[build]
+  # Directory to publish (Vite output directory)
+  publish = "dist"
+  
+  # Build command
+  command = "npm run build"
+
+# SPA redirect rules for Vue Router
+# This ensures all routes are handled by index.html for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for better performance and security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Performance headers
+    # Cache static assets for 1 year
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    # Don't cache index.html to ensure users get latest version
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    # Cache manifest for 1 day
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    # Cache hashed assets for 1 year
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Environment variables (if needed)
+[context.production.environment]
+  # Add production environment variables here if needed
+  # VITE_API_URL = "https://api.randomproof.app"
+
+[context.deploy-preview.environment]
+  # Add deploy preview environment variables here if needed
+  # VITE_API_URL = "https://staging-api.randomproof.app"
+
+# Plugin configuration (optional)
+# [[plugins]]
+#   package = "@netlify/plugin-lighthouse"
