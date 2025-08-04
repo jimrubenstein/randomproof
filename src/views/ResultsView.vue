@@ -247,7 +247,7 @@ async function copyShareableUrl() {
               🔍 Want to verify these results are authentic?
             </p>
             <button
-              @click="showManualVerification = true"
+              @click="() => { showManualVerification = true; manualSalt = urlSalt || store.salt || ''; manualPreSort = urlPreSort }"
               class="btn-primary w-full"
             >
               🛡️ Verify Original Data
