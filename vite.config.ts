@@ -13,6 +13,11 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['buffer'],
+    include: ['buffer', 'keccak'],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/keccak/, /node_modules/],
+    },
   },
 })
