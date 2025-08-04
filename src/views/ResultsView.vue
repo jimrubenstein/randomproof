@@ -6,6 +6,8 @@ import ResultsPage from '../components/ResultsPage.vue'
 import WinnerSelection from '../components/WinnerSelection.vue'
 import { fetchGistData } from '../utils/github'
 import { sha256Hash } from '../utils/hashing'
+import { blockchainContract } from '../utils/blockchain'
+import { MathRandomDriver } from '../utils/mathRandomDriver'
 
 const props = defineProps<{
   transactionID: string
@@ -20,9 +22,15 @@ const manualSalt = ref('')
 const manualPreSort = ref(true)
 const verificationResult = ref<'pending' | 'success' | 'failed'>('pending')
 const showCopySuccess = ref(false)
+const randomnessNotRequested = ref(false)
 
 // Check if we have gist URL from query params
 const gistUrl = computed(() => route.query.gg as string | undefined)
+
+// Check for verification parameters in URL
+const urlEntityHash = computed(() => route.query.entityHash as string | undefined)
+const urlSalt = computed(() => route.query.salt as string | undefined)
+const urlPreSort = computed(() => route.query.preSort === '1')
 
 onMounted(async () => {
   // Store transaction ID
@@ -34,6 +42,37 @@ onMounted(async () => {
     const winnerCount = parseInt(winnersParam)
     if (!isNaN(winnerCount) && winnerCount > 0) {
       store.setNumberOfWinners(winnerCount)
+    }
+  }
+  
+  // Restore state from URL parameters for verification
+  if (urlEntityHash.value) {
+    store.entityHash = urlEntityHash.value
+  }
+  
+  if (urlSalt.value) {
+    store.setSalt(urlSalt.value)
+  }
+  
+  store.setPreSortEnabled(urlPreSort.value)
+  
+  // If we don't have randomness but have entity hash, request it
+  // IMPORTANT: Only auto-generate for Math.random driver (testing), not production blockchain
+  if (!store.hasRandomness && urlEntityHash.value) {
+    if (blockchainContract instanceof MathRandomDriver) {
+      try {
+        // For testing driver only: auto-fetch randomness using the entity hash from URL
+        const randomValue = await blockchainContract.fetchRandomness(urlEntityHash.value)
+        if (randomValue > 0) {
+          store.setRandomnessData(randomValue, props.transactionID)
+          store.setResponseBlockData(Date.now(), Date.now()) // Mock block data
+        }
+      } catch (error) {
+        console.error('Failed to fetch randomness:', error)
+      }
+    } else {
+      // Production blockchain: Show error that randomness hasn't been requested
+      randomnessNotRequested.value = true
     }
   }
   
@@ -94,8 +133,14 @@ async function verifyManually() {
   
   // Compute hash (data+salt hashed together)
   const computedHash = await sha256Hash(processedData + manualSalt.value)
-  const entityHashValid = computedHash === store.entityHash
-  const saltValid = manualSalt.value === store.salt
+  
+  // Compare against the entity hash from URL or store
+  const targetEntityHash = urlEntityHash.value || store.entityHash
+  const entityHashValid = computedHash === targetEntityHash
+  
+  // Salt verification - check against URL or store
+  const targetSalt = urlSalt.value || store.salt
+  const saltValid = manualSalt.value === targetSalt
   
   verificationResult.value = entityHashValid && saltValid ? 'success' : 'failed'
   
@@ -127,7 +172,32 @@ async function copyShareableUrl() {
   <div class="max-w-4xl mx-auto">
     <h2 class="text-2xl font-bold mb-6">Randomness Results</h2>
     
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Error State: Randomness Not Requested (Production Only) -->
+    <div v-if="randomnessNotRequested" class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+      <div class="flex items-start">
+        <svg class="w-6 h-6 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+          <h3 class="text-lg font-semibold text-red-800 mb-2">Randomness Not Yet Requested</h3>
+          <p class="text-red-700 mb-3">
+            This entity hash has not been submitted to the blockchain for random number generation. 
+            The proof must be requested before results can be displayed.
+          </p>
+          <p class="text-sm text-red-600 mb-4">
+            <strong>Entity Hash:</strong> <code class="bg-red-100 px-2 py-1 rounded text-xs">{{ urlEntityHash?.slice(0, 16) }}...</code>
+          </p>
+          <router-link 
+            to="/" 
+            class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            ← Return to Input Form
+          </router-link>
+        </div>
+      </div>
+    </div>
+    
+    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Left Column: Results -->
       <div>
         <ResultsPage :transaction-id="transactionID" />
@@ -164,6 +234,15 @@ async function copyShareableUrl() {
               </button>
             </div>
             
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
+              <p class="text-amber-800 text-sm">
+                <strong>🔗 Entity Hash:</strong> <code class="text-xs bg-amber-100 px-1 py-0.5 rounded">{{ store.entityHash?.slice(0, 16) }}...</code>
+              </p>
+              <p class="text-amber-700 text-xs mt-1">
+                This hash uniquely identifies your data+salt combination
+              </p>
+            </div>
+            
             <p class="text-center text-gray-600 text-sm">
               🔍 Want to verify these results are authentic?
             </p>
@@ -183,6 +262,9 @@ async function copyShareableUrl() {
               <p class="text-blue-800 text-sm">
                 <strong>🔍 Verification Process:</strong> Paste the original participant data exactly as you entered it. 
                 We'll process it the same way and compare the entity hash to verify authenticity.
+              </p>
+              <p class="text-blue-700 text-xs mt-2">
+                <strong>Expected Hash:</strong> <code class="bg-blue-100 px-1 py-0.5 rounded">{{ (urlEntityHash || store.entityHash)?.slice(0, 16) }}...</code>
               </p>
             </div>
             
@@ -205,6 +287,7 @@ async function copyShareableUrl() {
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Salt Value
+                <span v-if="urlSalt" class="text-gray-500 font-normal">(expected: "{{ urlSalt }}")</span>
               </label>
               <input
                 type="text"
@@ -279,8 +362,8 @@ async function copyShareableUrl() {
       </div>
     </div>
     
-    <!-- Back to Home -->
-    <div class="mt-8 text-center">
+    <!-- Back to Home (show always) -->
+    <div v-if="!randomnessNotRequested" class="mt-8 text-center">
       <router-link
         to="/"
         class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"

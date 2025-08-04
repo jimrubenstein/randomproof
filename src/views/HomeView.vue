@@ -40,6 +40,17 @@ async function handleSubmit() {
     // Add winner count to URL for shareable results
     query.winners = store.numberOfWinners.toString()
     
+    // Add salt to URL for verification
+    if (store.salt) {
+      query.salt = store.salt
+    }
+    
+    // Add entity hash for direct verification
+    query.entityHash = entityHash
+    
+    // Add pre-sort flag
+    query.preSort = store.preSortEnabled ? '1' : '0'
+    
     router.push({
       name: 'results',
       params: { transactionID: transactionId },
